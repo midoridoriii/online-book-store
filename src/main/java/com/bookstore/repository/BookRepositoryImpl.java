@@ -1,30 +1,54 @@
 package com.bookstore.repository;
 
+import com.bookstore.exception.DataProcessingException;
 import com.bookstore.model.Book;
-import jakarta.persistence.EntityManager;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
-    private final EntityManager entityManager;
-
-    public BookRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    private final SessionFactory sessionFactory;
 
     @Override
-    @Transactional
     public Book save(Book book) {
-        entityManager.persist(book);
-        return book;
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(book);
+            transaction.commit();
+            return book;
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new DataProcessingException(
+                    "Can't save book with ISBN: " + book.getIsbn(), e
+            );
+        }
     }
 
     @Override
     public List<Book> findAll() {
-        return entityManager.createQuery(
-                "FROM Book", Book.class
-        ).getResultList();
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            List<Book> books = session.createQuery(
+                    "FROM Book", Book.class
+            ).getResultList();
+            transaction.commit();
+            return books;
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new DataProcessingException(
+                    "Can't get all books from database", e
+            );
+        }
     }
 }
