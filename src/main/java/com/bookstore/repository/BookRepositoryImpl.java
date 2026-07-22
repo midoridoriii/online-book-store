@@ -16,8 +16,10 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Book save(Book book) {
+        Session session = null;
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try {
+            session = sessionFactory.openSession();
             transaction = session.beginTransaction();
             session.persist(book);
             transaction.commit();
@@ -26,29 +28,19 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            throw new DataProcessingException(
-                    "Can't save book with ISBN: " + book.getIsbn(), e
-            );
+            throw new DataProcessingException("Can't save book: " + book, e);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
     @Override
     public List<Book> findAll() {
-        Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            List<Book> books = session.createQuery(
-                    "FROM Book", Book.class
-            ).getResultList();
-            transaction.commit();
-            return books;
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw new DataProcessingException(
-                    "Can't get all books from database", e
-            );
+            return session.createQuery("FROM Book", Book.class)
+                    .getResultList();
         }
     }
 }
