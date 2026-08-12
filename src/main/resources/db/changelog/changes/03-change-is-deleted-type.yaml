@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: change-is-deleted-type-to-bit
-      author: midoridoriii
-      changes:
-        - modifyDataType:
-            tableName: books
-            columnName: is_deleted
-            newDataType: BIT

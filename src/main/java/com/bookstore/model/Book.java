@@ -9,13 +9,14 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "books")
-@SoftDelete(columnName = "is_deleted")
+@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
+@org.hibernate.annotations.SQLRestriction("is_deleted=false")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
