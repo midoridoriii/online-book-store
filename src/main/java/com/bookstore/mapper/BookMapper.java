@@ -5,10 +5,16 @@ import com.bookstore.dto.CreateBookRequestDto;
 import com.bookstore.model.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookMapper {
     BookDto toDto(Book book);
 
     Book toModel(CreateBookRequestDto requestDto);
+
+    void updateBookFromDto(
+            CreateBookRequestDto requestDto,
+            @MappingTarget Book book
+    );
 }

@@ -4,6 +4,7 @@ import com.bookstore.dto.BookDto;
 import com.bookstore.dto.CreateBookRequestDto;
 import com.bookstore.exception.EntityNotFoundException;
 import com.bookstore.mapper.BookMapper;
+import com.bookstore.model.Book;
 import com.bookstore.repository.BookRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,27 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(
                 bookRepository.save(bookMapper.toModel(bookDto))
         );
+    }
+
+    @Override
+    public BookDto updateBook(Long id, CreateBookRequestDto bookDto) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Can't find book by id: " + id
+                        ));
+
+        bookMapper.updateBookFromDto(bookDto, book);
+        return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    @Override
+    public void deleteBook(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new EntityNotFoundException(
+                    "Can't find book by id: " + id
+            );
+        }
+        bookRepository.deleteById(id);
     }
 }
