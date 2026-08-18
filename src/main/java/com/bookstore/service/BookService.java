@@ -1,10 +1,17 @@
 package com.bookstore.service;
 
-import com.bookstore.model.Book;
+import com.bookstore.dto.BookDto;
+import com.bookstore.dto.CreateBookRequestDto;
 import java.util.List;
 
 public interface BookService {
-    Book save(Book book);
+    List<BookDto> getAll();
 
-    List<Book> findAll();
+    BookDto getBookById(Long id);
+
+    BookDto createBook(CreateBookRequestDto bookDto);
+
+    BookDto updateBook(Long id, CreateBookRequestDto bookDto);
+
+    void deleteBook(Long id);
 }
