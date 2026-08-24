@@ -32,4 +32,12 @@ public class CustomGlobalExceptionHandler {
 
         return errors;
     }
+
+    @ExceptionHandler(RegistrationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleRegistrationException(
+            RegistrationException exception
+    ) {
+        return Map.of("error", exception.getMessage());
+    }
 }
