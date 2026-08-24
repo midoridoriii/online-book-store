@@ -34,7 +34,7 @@ public class CustomGlobalExceptionHandler {
     }
 
     @ExceptionHandler(RegistrationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleRegistrationException(
             RegistrationException exception
     ) {
