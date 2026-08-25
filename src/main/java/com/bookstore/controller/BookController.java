@@ -13,6 +13,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookController {
     private final BookService bookService;
 
+    @PreAuthorize("hasRole('USER')")
     @Operation(
             summary = "Get all books",
             description = "Returns books with pagination and sorting"
@@ -40,6 +42,7 @@ public class BookController {
         return bookService.getAll(pageable);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get book by id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Book found"),
@@ -50,6 +53,7 @@ public class BookController {
         return bookService.getBookById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new book")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Book created successfully"),
@@ -62,6 +66,7 @@ public class BookController {
         return bookService.createBook(bookDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update a book")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Book updated successfully"),
@@ -76,6 +81,7 @@ public class BookController {
         return bookService.updateBook(id, bookDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete a book")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Book deleted successfully"),
