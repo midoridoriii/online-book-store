@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-users-is-deleted-type
+      author: midoridoriii
+      changes:
+        - sql:
+            dbms: mysql
+            sql: >
+              ALTER TABLE users
+              MODIFY COLUMN is_deleted BIT(1) NOT NULL DEFAULT b'0';
