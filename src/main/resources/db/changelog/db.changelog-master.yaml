@@ -7,7 +7,3 @@ databaseChangeLog:
       file: db/changelog/changes/03-add-roles.yaml
   - include:
       file: db/changelog/changes/04-seed-security-users.yaml
-  - include:
-      file: db/changelog/changes/05-add-is-deleted-to-users.yaml
-  - include:
-      file: db/changelog/changes/06-fix-users-is-deleted-type.yaml
