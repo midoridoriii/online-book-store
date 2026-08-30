@@ -1,5 +1,7 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.UserLoginRequestDto;
+import com.bookstore.dto.UserLoginResponseDto;
 import com.bookstore.dto.UserRegistrationRequestDto;
 import com.bookstore.dto.UserResponseDto;
 import com.bookstore.exception.EntityNotFoundException;
@@ -10,8 +12,12 @@ import com.bookstore.model.RoleName;
 import com.bookstore.model.User;
 import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserRepository;
+import com.bookstore.util.JwtUtil;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +30,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto request)
@@ -44,5 +52,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRoles(Set.of(userRole));
 
         return userMapper.toDto(userRepository.save(user));
+    }
+
+    @Override
+    public UserLoginResponseDto login(UserLoginRequestDto request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        String token = jwtUtil.generateToken(authentication.getName());
+        return new UserLoginResponseDto(token);
     }
 }
